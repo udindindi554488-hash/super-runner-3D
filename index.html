@@ -3,462 +3,555 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Super Runner 3D</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#101c22">
+<title>SIB RUNNER - Zombie Apocalypse</title>
 <style>
 *{box-sizing:border-box}
 body{
-  margin:0;background:#10233f;color:white;
-  font-family:system-ui,Arial,sans-serif;
-  overflow:hidden;touch-action:none
+ margin:0;background:#101c22;color:white;
+ font-family:system-ui,Arial,sans-serif;
+ overflow:hidden;touch-action:none
 }
-#game{
-  display:block;width:100vw;height:100dvh;
-  background:#76d9ff;touch-action:none
-}
+canvas{display:block;width:100vw;height:100dvh;touch-action:none}
 .hud{
-  position:fixed;top:14px;left:14px;right:14px;
-  display:flex;justify-content:space-between;gap:8px;
-  pointer-events:none
+ position:fixed;top:12px;left:12px;right:12px;
+ display:flex;justify-content:space-between;align-items:center;
+ gap:6px;pointer-events:none
 }
 .pill{
-  background:#122a46dd;border:2px solid #ffffff55;
-  border-radius:16px;padding:9px 13px;
-  font-weight:900;font-size:14px;
-  box-shadow:0 4px 0 #07172b55
+ background:#102c29eF;border:2px solid #8bbd8277;
+ padding:9px 12px;border-radius:15px;
+ font-size:13px;font-weight:900;
+ box-shadow:0 4px 0 #07181588
 }
-#pause{
-  pointer-events:auto;border:0;color:white;
-  cursor:pointer;font-size:17px
-}
-#controls{
-  position:fixed;bottom:20px;left:0;right:0;
-  display:flex;justify-content:center;gap:14px;
-}
-.ctrl{
-  width:65px;height:60px;border:2px solid #ffffff99;
-  border-radius:20px;background:#15385dcc;color:white;
-  font-size:25px;font-weight:900;
-  box-shadow:0 5px 0 #07172b77;
-  touch-action:manipulation
-}
-.ctrl:active{transform:translateY(4px);box-shadow:none}
+.hud button{pointer-events:auto}
 .overlay{
-  position:fixed;inset:0;display:flex;
-  align-items:center;justify-content:center;
-  padding:20px;background:#07172b88;
+ position:fixed;inset:0;display:flex;
+ align-items:center;justify-content:center;
+ padding:18px;background:#07110f99;
+ overflow:auto
 }
 .panel{
-  width:min(390px,100%);text-align:center;
-  padding:26px 22px;border-radius:28px;
-  background:linear-gradient(160deg,#2368a7,#122541);
-  border:2px solid #ffffff77;
-  box-shadow:0 12px 35px #06132988;
+ width:min(410px,100%);max-height:90dvh;overflow:auto;
+ text-align:center;padding:24px 19px;
+ border-radius:27px;
+ background:linear-gradient(155deg,#285c48,#142d2c 70%);
+ border:2px solid #a6d59b77;
+ box-shadow:0 12px 35px #0009
 }
-.logo{font-size:48px;margin-bottom:2px}
-h1{font-size:30px;line-height:1.05;margin:8px 0;color:#ffe66d}
-p{line-height:1.55;color:#e4f5ff}
+.logo{font-size:55px}
+h1{font-size:34px;line-height:1;margin:8px 0;color:#d5ff72}
+h2{font-size:23px;color:#e2ffb2;margin:8px}
+p{color:#d4e9d8;line-height:1.5}
 .mainbtn{
-  width:100%;padding:15px;margin-top:10px;
-  border:0;border-radius:16px;background:#ffcf35;
-  color:#24334c;font-size:18px;font-weight:1000;
-  box-shadow:0 5px 0 #bc8011;cursor:pointer
+ width:100%;padding:14px;margin-top:9px;
+ border:0;border-radius:15px;
+ background:linear-gradient(#e5ff75,#a8d943);
+ color:#173020;font-size:17px;font-weight:1000;
+ box-shadow:0 5px 0 #648c2c;
+ cursor:pointer
 }
 .mainbtn:active{transform:translateY(3px);box-shadow:none}
-.small{font-size:12px;color:#c4e6ff}
+.secondary{
+ width:100%;padding:12px;margin-top:9px;
+ border:1px solid #a7c6a0;
+ border-radius:14px;background:#ffffff12;
+ color:white;font-weight:800;font-size:15px
+}
+.controls{
+ position:fixed;bottom:20px;left:0;right:0;
+ display:flex;justify-content:center;gap:12px
+}
+.ctrl{
+ width:65px;height:60px;border-radius:18px;
+ border:2px solid #c9f0ad99;
+ background:#153d36df;color:white;
+ font-size:26px;font-weight:900;
+ box-shadow:0 5px 0 #071b18aa
+}
+.ctrl:active{transform:translateY(4px)}
 .hidden{display:none!important}
+.small{font-size:12px;color:#c4dfc6}
+.shopgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.skin{
+ border:1px solid #a9d4a077;border-radius:15px;
+ background:#ffffff12;padding:12px
+}
+.skin .face{font-size:38px}
+.skin button{
+ border:0;border-radius:10px;padding:9px;
+ background:#d9f779;color:#19311d;font-weight:900;width:100%
+}
+.skin button:disabled{opacity:.5}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
 
-<div class="hud">
-  <div class="pill">⭐ <span id="score">0</span>
-    &nbsp; 🪙 <span id="coins">0</span></div>
-  <button id="pause" class="pill">Ⅱ</button>
-  <div class="pill">🏆 <span id="best">0</span></div>
+<div class="hud hidden" id="hud">
+ <div class="pill">⭐ <span id="score">0</span><br>
+ 🪙 <span id="coinsRun">0</span></div>
+ <button class="pill" id="pause">Ⅱ</button>
+ <div class="pill">🏆 <span id="best">0</span><br>
+ LEVEL <span id="level">1</span></div>
 </div>
 
-<div id="controls">
-  <button class="ctrl" id="left">◀</button>
-  <button class="ctrl" id="jump">⬆</button>
-  <button class="ctrl" id="right">▶</button>
+<div class="controls hidden" id="controls">
+ <button class="ctrl" id="left">◀</button>
+ <button class="ctrl" id="jump">⬆</button>
+ <button class="ctrl" id="right">▶</button>
 </div>
 
-<div class="overlay" id="startScreen">
-  <div class="panel">
-    <div class="logo">🏃‍♂️💨</div>
-    <h1>SUPER RUNNER<br>3D</h1>
-    <p>Lari sejauh mungkin, hindari rintangan, dan kumpulkan koin emas!</p>
-    <button class="mainbtn" id="start">▶ MULAI BERMAIN</button>
-    <p class="small">Geser layar atau gunakan tombol kontrol.</p>
-  </div>
+<!-- HOME -->
+<div class="overlay" id="home">
+ <div class="panel">
+  <div class="logo">🧟‍♂️</div>
+  <h1>SIB RUNNER</h1>
+  <h2>ZOMBIE APOCALYPSE</h2>
+  <p>Berlarilah menyelamatkan diri dari dunia zombie! Hindari rintangan, kumpulkan koin, dan jadilah zombie tercepat!</p>
+  <div class="pill">🪙 Koin: <span id="wallet">0</span></div>
+  <button class="mainbtn" id="play">▶ MULAI BERMAIN</button>
+  <button class="secondary" id="openShop">🛒 ZOMBIE SHOP</button>
+  <button class="secondary" id="musicToggle">🔊 MUSIK: ON</button>
+  <p class="small">SIB RUNNER • MOBILE ARCADE GAME</p>
+ </div>
 </div>
 
-<div class="overlay hidden" id="endScreen">
-  <div class="panel">
-    <div class="logo" id="endIcon">💥</div>
-    <h1 id="endTitle">GAME OVER!</h1>
-    <p>Skor: <b id="finalScore">0</b><br>
-       Koin terkumpul: <b id="finalCoins">0</b></p>
-    <button class="mainbtn" id="restart">↻ MAIN LAGI</button>
-  </div>
+<!-- SHOP -->
+<div class="overlay hidden" id="shop">
+ <div class="panel">
+  <div class="logo">🛒</div>
+  <h1>ZOMBIE SHOP</h1>
+  <p>Koin kamu: 🪙 <b id="shopWallet">0</b></p>
+  <div class="shopgrid" id="skinGrid"></div>
+  <button class="secondary" id="closeShop">← KEMBALI</button>
+ </div>
 </div>
 
+<!-- GAME OVER -->
+<div class="overlay hidden" id="gameOver">
+ <div class="panel">
+  <div class="logo">💀</div>
+  <h1>GAME OVER!</h1>
+  <p>Skor: <b id="finalScore">0</b><br>
+  Koin didapat: <b id="finalCoins">0</b><br>
+  Level: <b id="finalLevel">1</b></p>
+  <button class="mainbtn" id="again">↻ MAIN LAGI</button>
+  <button class="secondary" id="toHome">MENU UTAMA</button>
+ </div>
+</div>
+
+<!-- PAUSE -->
 <div class="overlay hidden" id="pauseScreen">
-  <div class="panel">
-    <div class="logo">⏸️</div>
-    <h1>JEDA</h1>
-    <p>Istirahat sebentar, pelari!</p>
-    <button class="mainbtn" id="resume">LANJUTKAN</button>
-  </div>
+ <div class="panel">
+  <div class="logo">⏸️</div>
+  <h1>PAUSED</h1>
+  <button class="mainbtn" id="resume">LANJUTKAN</button>
+  <button class="secondary" id="quit">KELUAR KE MENU</button>
+ </div>
 </div>
 
 <script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
+const canvas=$("game"),ctx=canvas.getContext("2d");
+let W=innerWidth,H=innerHeight,DPR=1;
 
-let W=0,H=0,DPR=1;
 function resize(){
-  W=innerWidth; H=innerHeight;
-  DPR=Math.min(devicePixelRatio||1,2);
-  canvas.width=Math.round(W*DPR);
-  canvas.height=Math.round(H*DPR);
-  canvas.style.width=W+"px";
-  canvas.style.height=H+"px";
-  ctx.setTransform(DPR,0,0,DPR,0,0);
+ W=innerWidth;H=innerHeight;
+ DPR=Math.min(devicePixelRatio||1,2);
+ canvas.width=Math.round(W*DPR);
+ canvas.height=Math.round(H*DPR);
+ canvas.style.width=W+"px";
+ canvas.style.height=H+"px";
+ ctx.setTransform(DPR,0,0,DPR,0,0);
 }
-addEventListener("resize",resize);
-resize();
+addEventListener("resize",resize);resize();
 
-let running=false, paused=false, over=false;
-let lane=0, jump=0, jumpV=0;
-let score=0, coins=0, best=0, speed=.38;
-let objects=[], spawn=0, last=0, world=0;
-let audio=null;
+// DATA KARAKTER
+const skins=[
+ {id:0,name:"Zombie Hijau",emoji:"🧟",cost:0,color:"#8bc34a",eye:"#edffb3"},
+ {id:1,name:"Zombie Ungu",emoji:"🧟",cost:100,color:"#a87bdf",eye:"#fff2aa"},
+ {id:2,name:"Zombie Biru",emoji:"🧟",cost:200,color:"#60b9dc",eye:"#fff5b4"},
+ {id:3,name:"Zombie Merah",emoji:"🧟",cost:350,color:"#d66a63",eye:"#fff1a1"}
+];
 
-try{best=Number(localStorage.getItem("sr3best"))||0}catch(e){}
-$("best").textContent=best;
+let wallet=0,best=0,unlocked=[0],selected=0;
+try{
+ wallet=Number(localStorage.getItem("sibWallet"))||0;
+ best=Number(localStorage.getItem("sibBest"))||0;
+ unlocked=JSON.parse(localStorage.getItem("sibUnlocked"))||[0];
+ selected=Number(localStorage.getItem("sibSkin"))||0;
+}catch(e){}
+if(!unlocked.includes(0))unlocked.unshift(0);
+if(!unlocked.includes(selected))selected=0;
 
-function sound(freq=600,duration=.08){
-  try{
-    audio ||= new (window.AudioContext||window.webkitAudioContext)();
-    if(audio.state==="suspended") audio.resume();
-    const o=audio.createOscillator();
-    const g=audio.createGain();
-    o.frequency.value=freq;
-    o.type="sine";
-    g.gain.setValueAtTime(.08,audio.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);
-    o.connect(g);g.connect(audio.destination);
-    o.start();o.stop(audio.currentTime+duration);
-  }catch(e){}
+function save(){
+ try{
+  localStorage.setItem("sibWallet",wallet);
+  localStorage.setItem("sibBest",best);
+  localStorage.setItem("sibUnlocked",JSON.stringify(unlocked));
+  localStorage.setItem("sibSkin",selected);
+ }catch(e){}
+ updateWallet();
+}
+function updateWallet(){
+ $("wallet").textContent=wallet;
+ $("shopWallet").textContent=wallet;
+ $("best").textContent=best;
 }
 
-function reset(){
-  lane=0;jump=0;jumpV=0;
-  score=0;coins=0;speed=.38;
-  objects=[];spawn=.7;world=0;
-  over=false;paused=false;
-  $("score").textContent=0;
-  $("coins").textContent=0;
+// AUDIO
+let audio=null,musicOn=true,musicTimer=null;
+function initAudio(){
+ if(!audio){
+  try{audio=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
+ }
+ if(audio?.state==="suspended")audio.resume();
+}
+function tone(freq=440,duration=.1,type="sine",volume=.06){
+ if(!audio||!musicOn)return;
+ const o=audio.createOscillator(),g=audio.createGain();
+ o.type=type;o.frequency.value=freq;
+ g.gain.setValueAtTime(volume,audio.currentTime);
+ g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);
+ o.connect(g);g.connect(audio.destination);
+ o.start();o.stop(audio.currentTime+duration);
+}
+function startMusic(){
+ stopMusic();
+ if(!musicOn)return;
+ let n=0;
+ const notes=[196,247,294,247,220,262,330,262];
+ musicTimer=setInterval(()=>{
+  if(!musicOn||state!=="playing")return;
+  tone(notes[n++%notes.length],.25,"triangle",.025);
+ },330);
+}
+function stopMusic(){
+ if(musicTimer)clearInterval(musicTimer);
+ musicTimer=null;
+}
+function toggleMusic(){
+ musicOn=!musicOn;
+ $("musicToggle").textContent=musicOn?"🔊 MUSIK: ON":"🔇 MUSIK: OFF";
+ if(!musicOn)stopMusic();
+ else if(state==="playing"){initAudio();startMusic()}
 }
 
+// GAME STATE
+let state="home";
+let lane=0,jump=0,jumpV=0;
+let score=0,runCoins=0,level=1;
+let speed=.36,spawn=0,world=0;
+let objects=[],last=0;
+
+function show(id){
+ ["home","shop","gameOver","pauseScreen"].forEach(x=>$(x).classList.add("hidden"));
+ if(id)$(id).classList.remove("hidden");
+}
 function startGame(){
-  reset();
-  running=true;
-  $("startScreen").classList.add("hidden");
-  $("endScreen").classList.add("hidden");
-  $("pauseScreen").classList.add("hidden");
-  last=performance.now();
-  sound(700,.12);
+ initAudio();stopMusic();
+ state="playing";
+ lane=0;jump=0;jumpV=0;
+ score=0;runCoins=0;level=1;
+ speed=.36;spawn=.7;world=0;objects=[];
+ $("score").textContent="0";
+ $("coinsRun").textContent="0";
+ $("level").textContent="1";
+ $("hud").classList.remove("hidden");
+ $("controls").classList.remove("hidden");
+ show(null);startMusic();
+ tone(600,.15);
+ last=performance.now();
 }
-function endGame(){
-  running=false;over=true;
-  sound(120,.3);
-  best=Math.max(best,Math.floor(score));
-  try{localStorage.setItem("sr3best",best)}catch(e){}
-  $("best").textContent=best;
-  $("finalScore").textContent=Math.floor(score);
-  $("finalCoins").textContent=coins;
-  $("endScreen").classList.remove("hidden");
+function gameOver(){
+ if(state!=="playing")return;
+ state="over";stopMusic();
+ wallet+=runCoins;
+ best=Math.max(best,Math.floor(score));
+ save();
+ $("finalScore").textContent=Math.floor(score);
+ $("finalCoins").textContent=runCoins;
+ $("finalLevel").textContent=level;
+ $("hud").classList.add("hidden");
+ $("controls").classList.add("hidden");
+ show("gameOver");tone(100,.5,"sawtooth");
 }
-function move(dir){
-  if(!running||paused)return;
-  lane=Math.max(-1,Math.min(1,lane+dir));
-  sound(380,.04);
+function pauseGame(){
+ if(state!=="playing")return;
+ state="paused";stopMusic();show("pauseScreen");
+}
+function resumeGame(){
+ if(state!=="paused")return;
+ initAudio();state="playing";show(null);
+ startMusic();last=performance.now();
+}
+function goHome(){
+ state="home";stopMusic();
+ $("hud").classList.add("hidden");
+ $("controls").classList.add("hidden");
+ show("home");updateWallet();
+}
+function openShop(){
+ if(state==="playing")return;
+ show("shop");renderShop();
+}
+function renderShop(){
+ $("shopWallet").textContent=wallet;
+ $("skinGrid").innerHTML="";
+ skins.forEach(s=>{
+  const owned=unlocked.includes(s.id);
+  const active=selected===s.id;
+  const div=document.createElement("div");
+  div.className="skin";
+  div.innerHTML=`
+   <div class="face">${s.emoji}</div>
+   <b>${s.name}</b>
+   <p style="font-size:12px">🪙 ${s.cost}</p>
+   <button ${active?"disabled":""} data-id="${s.id}">
+   ${active?"DIPAKAI":owned?"PILIH":"BELI"}
+   </button>`;
+  div.querySelector("button").onclick=()=>{
+   if(owned){selected=s.id;save();renderShop();return}
+   if(wallet<s.cost){alert("Koin belum cukup!");return}
+   wallet-=s.cost;unlocked.push(s.id);
+   selected=s.id;save();renderShop();
+  };
+  $("skinGrid").appendChild(div);
+ });
+}
+$("play").onclick=startGame;
+$("again").onclick=startGame;
+$("pause").onclick=pauseGame;
+$("resume").onclick=resumeGame;
+$("quit").onclick=goHome;
+$("toHome").onclick=goHome;
+$("openShop").onclick=openShop;
+$("closeShop").onclick=()=>show("home");
+$("musicToggle").onclick=toggleMusic;
+
+// CONTROLS
+function move(d){
+ if(state!=="playing")return;
+ lane=Math.max(-1,Math.min(1,lane+d));
+ tone(320,.04);
 }
 function doJump(){
-  if(!running||paused)return;
-  if(jump<=0){jumpV=780;sound(520,.08)}
+ if(state!=="playing"||jump>0)return;
+ jumpV=760;tone(520,.09);
 }
-$("start").onclick=startGame;
-$("restart").onclick=startGame;
 $("left").onclick=()=>move(-1);
 $("right").onclick=()=>move(1);
 $("jump").onclick=doJump;
-$("pause").onclick=()=>{
-  if(!running)return;
-  paused=!paused;
-  $("pauseScreen").classList.toggle("hidden",!paused);
-  $("pause").textContent=paused?"▶":"Ⅱ";
-  if(!paused)last=performance.now();
-};
-$("resume").onclick=()=>{
-  paused=false;last=performance.now();
-  $("pauseScreen").classList.add("hidden");
-  $("pause").textContent="Ⅱ";
-};
 
-let touchX=0,touchY=0;
+let tx=0,ty=0;
 canvas.addEventListener("pointerdown",e=>{
-  touchX=e.clientX;touchY=e.clientY;
+ tx=e.clientX;ty=e.clientY;
 });
 canvas.addEventListener("pointerup",e=>{
-  if(!running||paused)return;
-  const dx=e.clientX-touchX,dy=e.clientY-touchY;
-  if(Math.abs(dx)>25&&Math.abs(dx)>Math.abs(dy)){
-    move(dx>0?1:-1);
-  }else if(dy < -25){doJump()}
+ if(state!=="playing")return;
+ const dx=e.clientX-tx,dy=e.clientY-ty;
+ if(Math.abs(dx)>25&&Math.abs(dx)>Math.abs(dy))move(dx>0?1:-1);
+ else if(dy < -25)doJump();
 });
-
 addEventListener("keydown",e=>{
-  if(["ArrowLeft","ArrowRight","ArrowUp"," ","a","d"].includes(e.key))
-    e.preventDefault();
-  if(e.key==="ArrowLeft"||e.key==="a")move(-1);
-  if(e.key==="ArrowRight"||e.key==="d")move(1);
-  if(e.key==="ArrowUp"||e.key===" ")doJump();
-  if(e.key==="Escape"&&running)$("pause").click();
+ if(e.key==="ArrowLeft"||e.key==="a")move(-1);
+ if(e.key==="ArrowRight"||e.key==="d")move(1);
+ if(e.key==="ArrowUp"||e.key===" ")doJump();
+ if(e.key==="Escape")pauseGame();
 });
 
-function poly(points,color){
-  ctx.fillStyle=color;ctx.beginPath();
-  ctx.moveTo(points[0][0],points[0][1]);
-  for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);
-  ctx.closePath();ctx.fill();
+// DRAW HELPERS
+function rect(x,y,w,h,c,r=0){
+ ctx.fillStyle=c;
+ if(r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
+ else ctx.fillRect(x,y,w,h);
 }
-function ellipse(x,y,rx,ry,color){
-  ctx.fillStyle=color;ctx.beginPath();
-  ctx.ellipse(x,y,Math.max(0,rx),Math.max(0,ry),0,0,Math.PI*2);
-  ctx.fill();
+function ellipse(x,y,rx,ry,c){
+ ctx.fillStyle=c;ctx.beginPath();
+ ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();
 }
-function rect(x,y,w,h,color,r=0){
-  ctx.fillStyle=color;
-  if(r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
-  else ctx.fillRect(x,y,w,h);
+function poly(points,c){
+ ctx.fillStyle=c;ctx.beginPath();
+ ctx.moveTo(points[0][0],points[0][1]);
+ points.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));
+ ctx.closePath();ctx.fill();
 }
-function line(x1,y1,x2,y2,color,width=2){
-  ctx.strokeStyle=color;ctx.lineWidth=width;
-  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-}
-function path(x,y,pts,color){
-  poly(pts.map(p=>[p[0]+x,p[1]+y]),color);
+function line(x,y,x2,y2,c,w=2){
+ ctx.strokeStyle=c;ctx.lineWidth=w;
+ ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x2,y2);ctx.stroke();
 }
 function project(l,z){
-  // z=0 horizon, z=1 dekat pemain
-  const horizon=H*.31;
-  const bottom=H*.88;
-  const p=z*z;
-  const roadHalf=W*(.07+.42*p);
-  const center=W/2+l*roadHalf*.56;
-  return {x:center,y:horizon+(bottom-horizon)*z,
-    scale:.12+.95*z,half:roadHalf};
-}
-function drawBackground(){
-  const sky=ctx.createLinearGradient(0,0,0,H*.7);
-  sky.addColorStop(0,"#46baff");
-  sky.addColorStop(1,"#d4f7ff");
-  rect(0,0,W,H,sky);
-
-  // Matahari
-  ellipse(W*.82,H*.12,32,32,"#fff4a1");
-  // Awan
-  for(let i=0;i<4;i++){
-    const x=((i*W*.32-world*8)%(W+120)+W+120)%(W+120)-40;
-    const y=H*(.12+(i%3)*.055);
-    ellipse(x,y,30,12,"#ffffffcc");
-    ellipse(x+20,y-7,22,15,"#ffffffdd");
-    ellipse(x+39,y,26,12,"#ffffffcc");
-  }
-  // Bukit
-  path(0,H*.36,[[0,0],[W*.12,-H*.1],[W*.26,0],
-    [W*.42,-H*.13],[W*.57,0],[W*.76,-H*.09],
-    [W,0],[W,H*.25],[0,H*.25]],"#76c97c");
-  rect(0,H*.4,W,H*.5,"#59c85e");
-}
-function drawTree(x,y,s){
-  ellipse(x,y+4*s,13*s,5*s,"#268747");
-  rect(x-3*s,y-24*s,6*s,27*s,"#9a6338",2*s);
-  ellipse(x,y-30*s,14*s,17*s,"#179c58");
-  ellipse(x-6*s,y-34*s,9*s,11*s,"#35c96c");
-}
-function drawRoad(){
-  const horizon=H*.31,bottom=H*.89;
-  poly([[W*.44,horizon],[W*.56,horizon],
-    [W*1.04,bottom],[-W*.04,bottom]],"#596879");
-  poly([[W*.44,horizon],[W*.46,horizon],
-    [W*.09,bottom],[0,bottom]],"#e9f4fb");
-  poly([[W*.54,horizon],[W*.56,horizon],
-    [W,bottom],[W*.91,bottom]],"#e9f4fb");
-
-  // Garis lajur bergerak mengikuti perspektif
-  for(let i=0;i<13;i++){
-    let z=((i/13+world*.8)%1);
-    const p=project(0,z);
-    const next=project(0,Math.min(1,z+.045+.04*z));
-    for(const side of [-1,1]){
-      const x1=p.x+side*p.half/3;
-      const x2=next.x+side*next.half/3;
-      rect(x1-1.5*p.scale,p.y,3*p.scale,
-        Math.max(1,next.y-p.y), "#e7f4ff");
-    }
-  }
-  // Pohon di pinggir lintasan
-  for(let i=0;i<7;i++){
-    const z=((i/7+world*.45)%1);
-    const y=H*.31+(H*.55)*z;
-    const s=.25+z*.95;
-    const offset=W*(.11+.17*z);
-    drawTree(-offset,y,s);
-    drawTree(W+offset,y,s);
-  }
+ const horizon=H*.30,bottom=H*.89;
+ const p=z*z;
+ const half=W*(.07+.42*p);
+ return {x:W/2+l*half*.56,y:horizon+(bottom-horizon)*z,
+ scale:.12+.95*z,half};
 }
 
+// WORLD
+function drawWorld(){
+ let sky=ctx.createLinearGradient(0,0,0,H*.7);
+ sky.addColorStop(0,"#243d55");
+ sky.addColorStop(1,"#8b9a72");
+ rect(0,0,W,H,sky);
+ // Moon
+ ellipse(W*.82,H*.13,32,32,"#e5e5bd");
+ // Clouds
+ for(let i=0;i<4;i++){
+  let x=((i*W*.32-world*5)%(W+100)+W+100)%(W+100)-40;
+  ellipse(x,H*.13+(i%2)*30,30,12,"#a6b0ad");
+  ellipse(x+18,H*.12+(i%2)*30,22,15,"#bac2b5");
+ }
+ // Mountains / distant buildings
+ poly([[0,H*.43],[W*.14,H*.22],[W*.29,H*.43],
+ [W*.48,H*.2],[W*.66,H*.43],[W*.83,H*.26],
+ [W,H*.43],[W,H*.7],[0,H*.7]],"#42594c");
+ rect(0,H*.42,W,H*.5,"#506d43");
+ // Road
+ poly([[W*.43,H*.30],[W*.57,H*.30],[W*1.04,H*.9],
+ [-W*.04,H*.9]],"#515b59");
+ poly([[W*.43,H*.30],[W*.45,H*.30],[W*.07,H*.9],[0,H*.9]],"#b6b9a9");
+ poly([[W*.55,H*.30],[W*.57,H*.30],[W,H*.9],[W*.93,H*.9]],"#b6b9a9");
+ // Road lane stripes
+ for(let i=0;i<12;i++){
+  let z=((i/12+world*.7)%1),p=project(0,z);
+  let n=project(0,Math.min(1,z+.04+.04*z));
+  for(let side of [-1,1]){
+   let x=p.x+side*p.half/3;
+   rect(x-1.4*p.scale,p.y,2.8*p.scale,n.y-p.y,"#d6d9b9");
+  }
+ }
+ // Dead trees and grave stones
+ for(let i=0;i<7;i++){
+  let z=((i/7+world*.4)%1);
+  let y=H*.3+H*.57*z,s=.2+z;
+  let off=W*(.12+.18*z);
+  drawDeadTree(-off,y,s);
+  drawDeadTree(W+off,y,s);
+ }
+}
+function drawDeadTree(x,y,s){
+ ellipse(x,y+3*s,12*s,4*s,"#253b30");
+ line(x,y,x,y-36*s,"#433c31",5*s);
+ line(x,y-19*s,x-13*s,y-30*s,"#433c31",4*s);
+ line(x,y-23*s,x+13*s,y-34*s,"#433c31",4*s);
+}
 function drawCoin(o){
-  const p=project(o.l,o.z),s=p.scale;
-  const bob=Math.sin(world*9+o.phase)*3*s;
-  ellipse(p.x,p.y+4*s,13*s,4*s,"#00000033");
-  ellipse(p.x,p.y-17*s+bob,10*s,13*s,"#d88900");
-  ellipse(p.x,p.y-19*s+bob,9*s,12*s,"#ffdf37");
-  ellipse(p.x-2*s,p.y-21*s+bob,3*s,7*s,"#fff5a6");
-  ctx.fillStyle="#b97500";
-  ctx.font=`bold ${Math.max(8,13*s)}px Arial`;
-  ctx.textAlign="center";
-  ctx.fillText("$",p.x,p.y-14*s+bob);
+ let p=project(o.l,o.z),s=p.scale;
+ let bob=Math.sin(world*8+o.phase)*3*s;
+ ellipse(p.x,p.y,12*s,4*s,"#9d6a19");
+ ellipse(p.x,p.y-17*s+bob,9*s,12*s,"#f6bd26");
+ ellipse(p.x-2*s,p.y-19*s+bob,3*s,7*s,"#fff4a0");
 }
 function drawObstacle(o){
-  const p=project(o.l,o.z),s=p.scale;
-  const x=p.x,y=p.y;
-  ellipse(x,y+2*s,22*s,6*s,"#00000033");
-  if(o.type===0){
-    // Kotak berwarna
-    poly([[x-17*s,y-29*s],[x,y-38*s],[x+17*s,y-29*s],
-      [x,y-19*s]],"#ffb0ba");
-    rect(x-17*s,y-29*s,34*s,25*s,"#fa4e69",3*s);
-    poly([[x+17*s,y-29*s],[x,y-19*s],[x,y+1*s],
-      [x+17*s,y-9*s]],"#bd2547");
-    line(x-9*s,y-23*s,x-9*s,y-10*s,"#ff9cac",3*s);
-  }else{
-    // Batu kartun
-    poly([[x-20*s,y],[x-16*s,y-20*s],[x-4*s,y-29*s],
-      [x+13*s,y-24*s],[x+22*s,y-8*s],[x+17*s,y]],
-      "#8c98a9");
-    poly([[x-16*s,y-20*s],[x-4*s,y-29*s],
-      [x+13*s,y-24*s],[x+4*s,y-13*s]],"#c5d0dc");
-    ellipse(x+4*s,y-12*s,3*s,3*s,"#657183");
-  }
+ let p=project(o.l,o.z),s=p.scale,x=p.x,y=p.y;
+ ellipse(x,y,20*s,5*s,"#0007");
+ if(o.type===0){
+  rect(x-17*s,y-30*s,34*s,30*s,"#a55d37",4*s);
+  poly([[x-17*s,y-30*s],[x,y-39*s],[x+17*s,y-30*s],[x,y-20*s]],"#d99054");
+ }else{
+  // Tombstone
+  rect(x-14*s,y-31*s,28*s,31*s,"#8c9c91",7*s);
+  ellipse(x,y-29*s,14*s,9*s,"#8c9c91");
+  line(x,y-27*s,x,y-12*s,"#53645c",2*s);
+  line(x-5*s,y-21*s,x+5*s,y-21*s,"#53645c",2*s);
+ }
 }
 function drawPlayer(){
-  const p=project(lane,1);
-  const x=p.x,y=p.y;
-  const s=Math.min(W/390,1.3);
-  const lift=jump;
-  const yy=y-lift;
-  ellipse(x,y+3*s,22*s,7*s,"#143f2d66");
-
-  // Kaki berayun
-  const run=running&&!paused?Math.sin(world*20)*7*s:0;
-  line(x-7*s,yy-25*s,x-10*s+run,yy-5*s,"#2348a9",8*s);
-  line(x+7*s,yy-25*s,x+10*s-run,yy-5*s,"#2348a9",8*s);
-  ellipse(x-11*s+run,yy-4*s,8*s,4*s,"#ffce51");
-  ellipse(x+11*s-run,yy-4*s,8*s,4*s,"#ffce51");
-
-  // Badan
-  rect(x-15*s,yy-57*s,30*s,35*s,"#1679ed",9*s);
-  rect(x-12*s,yy-53*s,9*s,26*s,"#53c4ff",4*s);
-  // Tangan
-  line(x-13*s,yy-49*s,x-22*s-run*.5,yy-34*s,"#f7bd85",7*s);
-  line(x+13*s,yy-49*s,x+22*s+run*.5,yy-34*s,"#f7bd85",7*s);
-
-  // Kepala
-  ellipse(x,yy-69*s,18*s,19*s,"#f8c794");
-  ellipse(x-5*s,yy-71*s,3*s,4*s,"#243c53");
-  ellipse(x+5*s,yy-71*s,3*s,4*s,"#243c53");
-  line(x-5*s,yy-61*s,x+5*s,yy-61*s,"#b95148",2*s);
-  // Rambut
-  ellipse(x-7*s,yy-83*s,10*s,7*s,"#583622");
-  ellipse(x+2*s,yy-85*s,11*s,7*s,"#583622");
-  // Sepatu
-  ellipse(x-12*s+run,yy-1*s,9*s,4*s,"#ffcf32");
-  ellipse(x+12*s-run,yy-1*s,9*s,4*s,"#ffcf32");
+ const p=project(lane,1),x=p.x,y=p.y-jump;
+ const s=Math.min(W/390,1.3);
+ const skin=skins.find(a=>a.id===selected)||skins[0];
+ const run=Math.sin(world*20)*6*s;
+ ellipse(x,p.y+3,23*s,7*s,"#0006");
+ // legs
+ line(x-7*s,y-25*s,x-10*s+run,y-5*s,"#354b3c",8*s);
+ line(x+7*s,y-25*s,x+10*s-run,y-5*s,"#354b3c",8*s);
+ ellipse(x-11*s+run,y-3*s,8*s,4*s,"#34453a");
+ ellipse(x+11*s-run,y-3*s,8*s,4*s,"#34453a");
+ // body
+ rect(x-15*s,y-57*s,30*s,35*s,"#496e45",9*s);
+ rect(x-12*s,y-52*s,8*s,25*s,"#789c56",4*s);
+ // arms
+ line(x-13*s,y-49*s,x-22*s-run*.5,y-34*s,skin.color,7*s);
+ line(x+13*s,y-49*s,x+22*s+run*.5,y-34*s,skin.color,7*s);
+ // head
+ ellipse(x,y-69*s,19*s,20*s,skin.color);
+ // hair
+ ellipse(x-7*s,y-85*s,10*s,7*s,"#334236");
+ ellipse(x+3*s,y-84*s,12*s,8*s,"#334236");
+ // eyes
+ ellipse(x-7*s,y-72*s,4*s,6*s,skin.eye);
+ ellipse(x+7*s,y-72*s,4*s,6*s,skin.eye);
+ ellipse(x-7*s,y-72*s,1.8*s,3*s,"#263b35");
+ ellipse(x+7*s,y-72*s,1.8*s,3*s,"#263b35");
+ // mouth
+ line(x-6*s,y-59*s,x+6*s,y-59*s,"#6b3030",2*s);
+ // scar
+ line(x+11*s,y-82*s,x+15*s,y-77*s,"#ad4141",2*s);
+ // shoes
+ ellipse(x-11*s+run,y-2*s,8*s,4*s,"#b4c1a0");
+ ellipse(x+11*s-run,y-2*s,8*s,4*s,"#b4c1a0");
 }
 
 function spawnObject(){
-  const l=Math.floor(Math.random()*3)-1;
-  // Koin lebih sering muncul, rintangan lebih jarang
-  const type=Math.random()<.58?"coin":(Math.random()<.5?0:1);
-  objects.push({l,z:.02,type,phase:Math.random()*6});
+ let l=Math.floor(Math.random()*3)-1;
+ let r=Math.random();
+ let type=r<.40?"coin":r<.72?0:1;
+ objects.push({l,z:.02,type,phase:Math.random()*6});
 }
 function update(dt){
-  if(!running||paused)return;
-  world+=dt;
-  speed=Math.min(.72,speed+dt*.004);
-  score+=dt*10;
-  $("score").textContent=Math.floor(score);
-
-  if(jump>0||jumpV>0){
-    jump+=jumpV*dt;
-    jumpV-=1900*dt;
-    if(jump<=0){jump=0;jumpV=0}
+ if(state!=="playing")return;
+ world+=dt;
+ score+=dt*10;
+ level=1+Math.floor(score/500);
+ speed=Math.min(.75,.36+level*.025);
+ $("score").textContent=Math.floor(score);
+ $("coinsRun").textContent=runCoins;
+ $("level").textContent=level;
+ if(jump>0||jumpV>0){
+  jump+=jumpV*dt;jumpV-=1900*dt;
+  if(jump<=0){jump=0;jumpV=0}
+ }
+ spawn-=dt;
+ if(spawn<=0){
+  spawnObject();
+  spawn=Math.max(.45,1.05-level*.035)+Math.random()*.35;
+ }
+ for(let i=objects.length-1;i>=0;i--){
+  let o=objects[i];o.z+=speed*dt;
+  if(o.z>.90&&o.z<1.05&&o.l===lane){
+   if(o.type==="coin"){
+    runCoins++;score+=25;
+    tone(880,.07);
+    objects.splice(i,1);continue;
+   }else if(o.z>.93&&jump<48){
+    gameOver();return;
+   }
   }
-
-  spawn-=dt;
-  if(spawn<=0){
-    spawnObject();
-    spawn=Math.max(.42,1.05-Math.min(.5,speed*.65))+Math.random()*.35;
-  }
-
-  for(let i=objects.length-1;i>=0;i--){
-    const o=objects[i];
-    o.z+=speed*dt;
-    if(o.z>.89&&o.z<1.04&&o.l===lane){
-      if(o.type==="coin"){
-        coins++;score+=25;
-        $("coins").textContent=coins;
-        sound(880,.06);
-        objects.splice(i,1);continue;
-      }else if(o.z>.91&&jump<48){
-        endGame();return;
-      }
-    }
-    if(o.z>1.12)objects.splice(i,1);
-  }
+  if(o.z>1.12)objects.splice(i,1);
+ }
 }
-
 function draw(){
-  drawBackground();
-  drawRoad();
-  const sorted=[...objects].sort((a,b)=>a.z-b.z);
-  for(const o of sorted){
-    if(o.type==="coin")drawCoin(o);
-    else drawObstacle(o);
-  }
-  drawPlayer();
-
-  // Label kecil
-  ctx.textAlign="center";
-  ctx.font="bold 12px system-ui";
-  ctx.fillStyle="#ffffffcc";
-  ctx.fillText("SUPER RUNNER",W/2,H*.24);
+ drawWorld();
+ [...objects].sort((a,b)=>a.z-b.z).forEach(o=>{
+  if(o.type==="coin")drawCoin(o);else drawObstacle(o);
+ });
+ drawPlayer();
+ ctx.textAlign="center";
+ ctx.font="bold 12px system-ui";
+ ctx.fillStyle="#fff";
+ ctx.fillText("SIB RUNNER • ZOMBIE WORLD",W/2,H*.25);
 }
 function loop(now){
-  const dt=Math.min((now-last)/1000||0,.035);
-  last=now;
-  update(dt);
-  draw();
-  requestAnimationFrame(loop);
+ let dt=Math.min((now-last)/1000||0,.035);
+ last=now;
+ if(state==="playing")update(dt);
+ draw();
+ requestAnimationFrame(loop);
 }
+updateWallet();
 last=performance.now();
 requestAnimationFrame(loop);
 </script>
